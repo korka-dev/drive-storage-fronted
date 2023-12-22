@@ -9,7 +9,7 @@ import { CreateFolderForm } from "./components/CreateFolderForm";
 
 const token = {
   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo0LCJleHAiOjE3MDI1MDQzMzd9.yaLsvUV3oPi9W3N1DOoOrEPWOVWQMq54PBM0UaK6LrY",
-  "token_type": "bearer"
+  "token_type": "Bearer"
 };
 
 const App = () => {
