@@ -1,4 +1,4 @@
-export function DirectoryTable({ directories }) {
+export function DirectoryTable({ directories}) {
     return <table className="table table-hover ">
         <thead>
             <tr>
@@ -13,3 +13,4 @@ export function DirectoryTable({ directories }) {
 
     </table>
 }
+
