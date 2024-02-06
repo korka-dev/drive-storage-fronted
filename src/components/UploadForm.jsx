@@ -1,87 +1,70 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { UploadFile } from "../api/storage";
+import React, { useState, useRef } from "react";
+import { UploadFile, getToken, getFiles } from "../api/storage";
 import { SuccessMessage } from "./Message/SuccessMessage";
 import { ErrorMessage } from "./Message/ErrorMessage";
 import { useParams } from "react-router-dom";
-
-
-const token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo3LCJleHAiOjE3MDgzODUyODZ9.t84-n2vUR87_KjQHBPSNHVsbR1P_mwQ8pUKHdJKNMpw"
+import { BiUpload } from 'react-icons/bi';
 
 
 const UploadForm = () => {
     const [file, setFile] = useState();
     const [filename, setFilename] = useState("");
-    const [keep, setKeep] = useState(true);
-    // const [successMessage, setSuccessMessage] = useState("");
-    // const [errorMessage, setErrorMessage] = useState("");
-    // const [showModal, setShowModal] = useState(false);
-    // const navigate = useNavigate();
-    // const [currentDirectory, setCurrentDirectory] = useState(directory)
+    const [successMessage, setSuccessMessage] = useState(null);
+    const [errorMessage, setErrorMessage] = useState(null);
+    const fileInputRef = useRef(null);
+
     const { dir_path } = useParams();
+
+    const handleButtonClick = () => {
+        fileInputRef.current.click();
+    };
+
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
         setFile(selectedFile);
         setFilename(selectedFile.name);
+        handleUpload(selectedFile);
     };
 
-    // const handleKeepChange = () => {
-    //     setKeep(!keep);
-    // };
-
-    // const handleShow = () => {
-    //     setCurrentDirectory(directory)
-    //     setShowModal(true);
-    // }
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        // console.log(directory);
-
+    const handleUpload = async (selectedFile) => {
         try {
-            const response = await UploadFile(dir_path, filename, file, keep, token);
+            const response = await UploadFile(dir_path, selectedFile.name, selectedFile, true);
 
             if (response.status === 201) {
                 console.log("file uploaded successfully !!!");
+                setSuccessMessage("Fichier uploadé avec succès");
+                setTimeout(() => setSuccessMessage(null), 5000);
 
-                window.location.reload()
+                window.location.reload();
 
+                const filesResponse = await getFiles(dir_path);
+                const filesData = await filesResponse.json();
             } else {
-                // const data = await response.json();
-                // setErrorMessage(`Erreur ${response.status} : ${data.detail || "Erreur lors de l'upload du fichier"}`);
-                // setSuccessMessage("");
-
-                console.log("error uplaoding file");
+                console.log("error uploading file");
+                setErrorMessage("Erreur lors de l'upload du fichier");
+                setTimeout(() => setErrorMessage(null), 5000);
             }
         } catch (error) {
             console.error("Erreur lors de l'upload du fichier: ", error);
-            // setErrorMessage("Une erreur s'est produite lors de l'upload du fichier.");
-            // setSuccessMessage("");
+            setErrorMessage("Erreur de connexion au serveur API");
+            setTimeout(() => setErrorMessage(null), 5000);
         }
     };
 
-
-    // const handleClose = () => setShowModal(false);
-
-    // const handleModalConfirmation = () => {
-    //     // navigate("/upload");
-    //     handleClose();
-    // };
-
     return (
         <div>
-            <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                    <label htmlFor="fileInput" className="form-label">Choisir le fichier</label>
-                    <input type="file" className="form-control" id="fileInput" onChange={handleFileChange} />
-                </div>
-               
-                
-                <button type="submit" className="btn btn-primary" >Upload</button>
-            </form>
-
-            
+            {successMessage && <SuccessMessage message={successMessage} />}
+            {errorMessage && <ErrorMessage message={errorMessage} />}
+            <button className="btn btn-primary" onClick={handleButtonClick}>
+                <BiUpload /> Nouveau Fichier
+            </button>
+            <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: "none" }}
+                onChange={handleFileChange}
+            />
+            {filename && <div>{filename}</div>}
         </div>
     );
 };

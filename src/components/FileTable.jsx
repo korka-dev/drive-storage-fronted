@@ -9,6 +9,7 @@ export function FileTable({ files }) {
                     <th>Nom du fichier</th>
                     <th>Proprietaire</th>
                     <th>Date de creation</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>

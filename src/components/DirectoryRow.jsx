@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { FaFolder } from 'react-icons/fa';
 
 export function DirectoryRow({ directory }) {
 
@@ -9,10 +10,12 @@ export function DirectoryRow({ directory }) {
   }
   return (
     <tr onClick={handleOnClick} >
-      <td>{directory.dir_name}</td>
+      <td>
+        <FaFolder style={{ marginRight: '5px' }} />
+        {directory.dir_name}
+      </td>
       <td>{directory.owner}</td>
       <td>{directory.created_at}</td>
     </tr>
   );
 }
-

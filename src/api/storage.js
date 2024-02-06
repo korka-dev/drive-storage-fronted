@@ -1,4 +1,4 @@
-export const getDires = async (access_token) => {
+export const getDires = async () => {
 
     const limit = 10
     const skip = 0
@@ -6,18 +6,18 @@ export const getDires = async (access_token) => {
     return await fetch(`http://localhost:8000/files/directories?limit=${limit}&skip=${skip}`, {
         method: 'GET',
         headers: {
-            Authorization: `Bearer ${access_token}`,
+            Authorization: `Bearer ${getToken()}`,
             'Accept': 'application/json',
         },
     });
 }
 
-export const createFolder = async (directory, access_token) => {
+export const createFolder = async (directory) => {
     try {
         return await fetch(`http://localhost:8000/files/${directory}`, {
             method: 'POST',
             headers: {
-                Authorization: `Bearer ${access_token}`,
+                Authorization: `Bearer ${getToken()}`,
                 'Accept': 'application/json',
             },
 
@@ -28,7 +28,7 @@ export const createFolder = async (directory, access_token) => {
     }
 };
 
-export const getFiles = async (access_token, dirPath) => {
+export const getFiles = async ( dirPath) => {
 
     const limit = 10
     const skip = 0
@@ -36,13 +36,13 @@ export const getFiles = async (access_token, dirPath) => {
     return await fetch(`http://localhost:8000/files?directory=${dirPath}&limit=${limit}&skip=${skip}`, {
         method: 'GET',
         headers: {
-            Authorization: `Bearer ${access_token}`,
+            Authorization: `Bearer ${getToken()}`,
             'Accept': 'application/json',
         },
     });
 }
 
-export const UploadFile = async (directory, filename, file, keep, access_token) => {
+export const UploadFile = async (directory, filename, file, keep) => {
     try {
         const formData = new FormData();
 
@@ -54,7 +54,7 @@ export const UploadFile = async (directory, filename, file, keep, access_token) 
             method: 'POST',
             body: formData,
             headers: {
-                Authorization: `Bearer ${access_token}`,
+                Authorization: `Bearer ${getToken()}`,
             },
         });
 
@@ -64,4 +64,38 @@ export const UploadFile = async (directory, filename, file, keep, access_token) 
     }
 
 }
+
+export const downloadFile = async (dirPath, filename) => {
+
+
+
+    return await fetch(`http://localhost:8000/files/download/${dirPath}/${filename}`, {
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${getToken()}`,
+
+        },
+    });
+}
+
+export const deleteFile = async ( dirPath, filename) => {
+
+
+
+    return await fetch(`http://localhost:8000/files/${dirPath}/${filename}`, {
+        method: 'DELETE',
+        headers: {
+            Authorization: `Bearer ${getToken()}`,
+
+        },
+    });
+}
+
+
+
+export function getToken() {
+
+    return window.localStorage.getItem('access_token')
+}
+
 

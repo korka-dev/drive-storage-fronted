@@ -3,16 +3,34 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './components/Home';
 import FileView from './components/FileView';
 import ErrorBoundary from './components/ErrorBoundary';
+import { LoginForm } from './components/Login';
+import { RegisterForm } from './components/Register';
 
 const App = () => {
   return (
     <Router>
       <Routes>
         <Route
+          path="/"
+          element={
+            <ErrorBoundary errorMessage="Error in the LoginForm component">
+              <LoginForm />
+            </ErrorBoundary>
+          }
+        />
+
+        <Route
+          path="/register"
+          element={
+            <ErrorBoundary errorMessage="Error in the RegisterForm component">
+              <RegisterForm />
+            </ErrorBoundary>
+          }
+        />
+        <Route
           path="/files"
           element={
             <ErrorBoundary errorMessage="Error in the Home component">
-              {/* Wrap the Home component with ErrorBoundary and pass a custom error message */}
               <Home />
             </ErrorBoundary>
           }
@@ -21,7 +39,6 @@ const App = () => {
           path="/files/:dir_path"
           element={
             <ErrorBoundary errorMessage="Error in the FileView component">
-              {/* Wrap the FileView component with ErrorBoundary and pass a custom error message */}
               <FileView />
             </ErrorBoundary>
           }

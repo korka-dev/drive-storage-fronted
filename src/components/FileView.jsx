@@ -1,22 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { FileTable } from "./FileTable";
-import { getFiles } from "../api/storage";
+import { getFiles, getToken } from "../api/storage";
 import { FileRow } from "./FileRow";
 import UploadForm from "./UploadForm";
-
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo3LCJleHAiOjE3MDgzODUyODZ9.t84-n2vUR87_KjQHBPSNHVsbR1P_mwQ8pUKHdJKNMpw"
-
-
+import { SearchBar } from "./SearchBar";
+import ErrorBoundary from "./ErrorBoundary";
 
 const FileView = () => {
-
     const { dir_path } = useParams();
-    const [files, setFiles] = useState([])
-
-
-
+    const [files, setFiles] = useState([]);
     const [isLoaded, setIsLoaded] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [currentPath, setCurrentPath] = useState("/files");
 
     useEffect(() => {
         if (!isLoaded) {
@@ -25,11 +21,9 @@ const FileView = () => {
         }
     }, [isLoaded]);
 
-
-
     const fetchFiles = async () => {
         try {
-            const response = await getFiles(token, dir_path);
+            const response = await getFiles(dir_path);
             const filesData = await response.json();
             setFiles(filesData);
         } catch (error) {
@@ -37,29 +31,31 @@ const FileView = () => {
         }
     };
 
-    const foundedFiles = files
-        // .filter(directory => directory.name.toLocaleLowerCase().includes(folderName.toLowerCase()))
-        .map(file => <FileRow file={file} key={file.file_name} />)
+    const handleSearchChange = (value) => {
+        setSearchTerm(value);
+    };
 
+    const filteredFiles = files
+        .filter(file => file.file_name.toLowerCase().includes(searchTerm.toLowerCase()))
+        .map(file => <FileRow file={file} key={file.file_name} />);
 
     return (
-        <div className="container my-3">
-            <div className="row">
-                <div className="col-3">
-                    <UploadForm />
+        <ErrorBoundary errorMessage="Une erreur est survenue lors du rendu du composant FileView.">
+            <div className="container my-3">
+                <div className="row">
+                    <div className="col-md-3">
+                        <UploadForm />
+                    </div>
+                    <div className="col-md-9">
+                        <div className="d-flex align-items-center justify-content-center mb-3">
+                            <SearchBar value={searchTerm} onChange={handleSearchChange} placeholder="Rechercher un fichier..." />
+                        </div>
+                        <FileTable files={filteredFiles} />
+                    </div>
                 </div>
-                <div className="col">
-                    {/* <SearchBar placeholder="Rechercher ..." directoryName={folderName} onChange={setFolderName} /> */}
-                    <FileTable files={foundedFiles} />
-
-                </div>
-                <div className="col-1"></div>
             </div>
-        </div>
+        </ErrorBoundary>
     );
 };
-
-
-
 
 export default FileView;
